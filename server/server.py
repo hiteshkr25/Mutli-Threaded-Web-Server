@@ -302,6 +302,18 @@ def _get_metrics_copy():
         times = list(metrics.get("response_times", []))
         p95 = _calc_percentiles(times, 95)
         p99 = _calc_percentiles(times, 99)
+        
+        session_summary = [
+            {
+                "session_id": s["session_id"],
+                "first_seen": s["first_seen"],
+                "last_seen": s["last_seen"],
+                "hit_count": s["hit_count"],
+                "last_path": s.get("last_path"),
+                "device_type": s.get("device_type", "unknown")
+            } for s in list(session_data.values())[:20]
+        ]
+        
         return {
             "active_clients": int(metrics.get("active_clients", 0)),
             "total_requests": int(metrics.get("total_requests", 0)),
@@ -318,7 +330,7 @@ def _get_metrics_copy():
             "latency_trend": list(metrics.get("latency_trend", []))[-MAX_LAT:],
             "status_codes": dict(metrics.get("status_codes", {})),
             "geo": dict(metrics.get("geo", {})),
-            "session_summary": list(metrics.get("session_summary", []))[:20]
+            "session_summary": session_summary
         }
 
 
